@@ -1,6 +1,6 @@
 class LineReply::Message
 
-  RANDOM_EMOJI = [
+  EMOJI = [
       "(^^)",
       "(^_^)",
       "(^-^)",
@@ -10,16 +10,30 @@ class LineReply::Message
       "！！"
   ]
 
+  AMAZING = [
+      "すげーっす！！",
+      "まじすげーっす！！",
+      "ほんとにすげーっす！！"
+  ]
+
   class << self
-    def create!
+    def create(reply_text)
       {
           type: 'text',
-          text: "よろしくお願いします#{random_emoji}"
+          text: reply_text
       }
     end
 
-    def random_emoji
-      RANDOM_EMOJI[rand(RANDOM_EMOJI.length)]
+    def random_reply(random_texts)
+      random_texts[rand(random_texts.length)]
+    end
+
+    def first_greeting_reply_create
+      create("よろしくお願いします#{random_reply(EMOJI)}")
+    end
+
+    def amazing_reply_create
+      create(random_reply(AMAZING))
     end
   end
 end

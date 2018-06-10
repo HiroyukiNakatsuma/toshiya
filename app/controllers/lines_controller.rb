@@ -5,6 +5,7 @@ class LinesController < ApplicationController
   protect_from_forgery :except => [:message]
 
   FIRST_GREETING_WORDS = %w(よろしく よろしこ 宜しく 初めまして はじめまして)
+  AMAZING_WORDS = %w(すごい すごすぎ すご過ぎ すげー すご！ すごー)
 
   def message
     body = request.body.read
@@ -17,8 +18,11 @@ class LinesController < ApplicationController
         when Line::Bot::Event::Message
           case event.type
           when Line::Bot::Event::MessageType::Text
-            if include_first_greeting_word?(event.message['text'])
-              reply_message = LineReply::Message.create!
+            if include_hook_word?(event.message['text'], FIRST_GREETING_WORDS)
+              reply_message = LineReply::Message.first_greeting_reply_create
+              client.reply_message(event['replyToken'], reply_message)
+            elsif include_hook_word?(event.message['text'], AMAZING_WORDS)
+              reply_message = LineReply::Message.amazing_reply_create
               client.reply_message(event['replyToken'], reply_message)
             end
           end
@@ -44,8 +48,8 @@ class LinesController < ApplicationController
     }
   end
 
-  def include_first_greeting_word?(message_text)
-    FIRST_GREETING_WORDS.any? do |word|
+  def include_hook_word?(message_text, hook_words)
+    hook_words.any? do |word|
       message_text.include?(word)
     end
   end
