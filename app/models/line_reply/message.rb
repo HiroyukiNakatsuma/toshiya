@@ -1,4 +1,4 @@
-class Message
+class LineReply::Message
 
   RANDOM_EMOJI = [
       "(^^)",
