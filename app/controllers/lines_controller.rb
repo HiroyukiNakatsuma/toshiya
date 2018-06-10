@@ -1,6 +1,7 @@
 require 'line/bot'
 
 class LinesController < ApplicationController
+  protect_from_forgery with: :null_session
 
   def client
     @client ||= Line::Bot::Client.new {|config|
