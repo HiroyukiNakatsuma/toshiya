@@ -1,14 +1,10 @@
 require 'line/bot'
 
 class LinesController < ApplicationController
+  before_action :set_line_client
   protect_from_forgery :except => [:message]
 
-  def client
-    @client ||= Line::Bot::Client.new {|config|
-      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
-    }
-  end
+  FIRST_GREETING_WORDS = %w(よろしく よろしこ 宜しく 初めまして はじめまして)
 
   def message
     body = request.body.read
@@ -21,11 +17,10 @@ class LinesController < ApplicationController
         when Line::Bot::Event::Message
           case event.type
           when Line::Bot::Event::MessageType::Text
-            message = {
-                type: 'text',
-                text: event.message['text']
-            }
-            client.reply_message(event['replyToken'], message)
+            if include_first_greeting_word?(event.message['text'])
+              reply_message = Line::ReplyMessage.create
+              client.reply_message(event['replyToken'], reply_message)
+            end
           end
         end
       }
@@ -33,6 +28,25 @@ class LinesController < ApplicationController
       "OK"
     else
       render status: 400, json: {status: 400, message: 'Bad Request'}
+    end
+  end
+
+  private
+
+  def set_line_client
+    client
+  end
+
+  def client
+    @client ||= Line::Bot::Client.new {|config|
+      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+    }
+  end
+
+  def include_first_greeting_word?(message_text)
+    FIRST_GREETING_WORDS.any? do |word|
+      message_text.include?(word)
     end
   end
 end
