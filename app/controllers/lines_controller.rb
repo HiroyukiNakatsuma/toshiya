@@ -18,7 +18,7 @@ class LinesController < ApplicationController
           case event.type
           when Line::Bot::Event::MessageType::Text
             if include_first_greeting_word?(event.message['text'])
-              reply_message = Line::ReplyMessage.create
+              reply_message = LineReply::Message.create!
               client.reply_message(event['replyToken'], reply_message)
             end
           end

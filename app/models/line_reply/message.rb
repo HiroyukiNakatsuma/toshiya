@@ -1,4 +1,4 @@
-class ReplyMessage
+class Message
 
   RANDOM_EMOJI = [
       "(^^)",
@@ -11,7 +11,7 @@ class ReplyMessage
   ]
 
   class << self
-    def create
+    def create!
       {
           type: 'text',
           text: "よろしくお願いします#{random_emoji}"
