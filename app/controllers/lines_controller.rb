@@ -15,7 +15,7 @@ class LinesController < ApplicationController
         when Line::Bot::Event::Message
           case event.type
           when Line::Bot::Event::MessageType::Text
-            reply_message = Line::ReplyMessage.create("User Name")
+            reply_message = Line::ReplyMessage.create
             client.reply_message(event['replyToken'], reply_message)
           end
         end

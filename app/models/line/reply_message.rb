@@ -6,19 +6,20 @@ class ReplyMessage
       "(^-^)",
       "(*^^*)",
       "(^ ^)",
-      "(^.^)"
+      "(^.^)",
+      "！！"
   ]
 
   class << self
-    def create(user_name)
+    def create
       {
           type: 'text',
-          text: "#{user_name}さん、よろしくお願いします#{random_emoji}"
+          text: "よろしくお願いします#{random_emoji}"
       }
     end
 
     def random_emoji
-      RANDOM_EMOJI[rand(6)]
+      RANDOM_EMOJI[rand(RANDOM_EMOJI.length)]
     end
   end
 end
