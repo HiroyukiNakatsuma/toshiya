@@ -1,21 +1,8 @@
 require 'line/bot'
 
 class LinesController < ApplicationController
+  before_action :set_line_client
   protect_from_forgery :except => [:message]
-
-  def client
-    @client ||= Line::Bot::Client.new {|config|
-      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
-      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
-    }
-  end
-
-  def welcome_msg event
-    {
-        type: 'text',
-        text: "よろしく願いします#{}"
-    }
-  end
 
   def message
     body = request.body.read
@@ -38,5 +25,18 @@ class LinesController < ApplicationController
     else
       render status: 400, json: {status: 400, message: 'Bad Request'}
     end
+  end
+
+  private
+
+  def set_line_client
+    client
+  end
+
+  def client
+    @client ||= Line::Bot::Client.new {|config|
+      config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
+      config.channel_token = ENV["LINE_CHANNEL_TOKEN"]
+    }
   end
 end
