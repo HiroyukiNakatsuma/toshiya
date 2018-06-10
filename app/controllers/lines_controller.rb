@@ -10,6 +10,13 @@ class LinesController < ApplicationController
     }
   end
 
+  def welcome_msg event
+    {
+        type: 'text',
+        text: "よろしく願いします#{}"
+    }
+  end
+
   def message
     body = request.body.read
 
@@ -21,11 +28,8 @@ class LinesController < ApplicationController
         when Line::Bot::Event::Message
           case event.type
           when Line::Bot::Event::MessageType::Text
-            message = {
-                type: 'text',
-                text: event.message['text']
-            }
-            client.reply_message(event['replyToken'], message)
+            reply_message = Line::ReplyMessage.create("User Name")
+            client.reply_message(event['replyToken'], reply_message)
           end
         end
       }
