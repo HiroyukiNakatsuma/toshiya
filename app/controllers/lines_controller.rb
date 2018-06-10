@@ -31,8 +31,8 @@ class LinesController < ApplicationController
       }
 
       "OK"
+    else
+      render status: 400, json: {status: 400, message: 'Bad Request'}
     end
-  else
-    render status: 400, json: {status: 400, message: 'Bad Request'}
   end
 end
