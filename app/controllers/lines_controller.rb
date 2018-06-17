@@ -6,6 +6,7 @@ class LinesController < ApplicationController
 
   FIRST_GREETING_WORDS = %w(よろしく よろしこ 宜しく 初めまして はじめまして)
   AMAZING_WORDS = %w(すごい すごすぎ すご過ぎ すげー すご！ すごー)
+  LGTM_WORDS = %w(いいね いいと いいです いいよ いい！ 良いね 良いと 良いです 良いよ 良い！)
 
   def message
     body = request.body.read
@@ -20,11 +21,14 @@ class LinesController < ApplicationController
           when Line::Bot::Event::MessageType::Text
             if include_hook_word?(event.message['text'], FIRST_GREETING_WORDS)
               reply_message = LineReply::Message.first_greeting_reply_create
-              client.reply_message(event['replyToken'], reply_message)
             elsif include_hook_word?(event.message['text'], AMAZING_WORDS)
               reply_message = LineReply::Message.amazing_reply_create
-              client.reply_message(event['replyToken'], reply_message)
+            elsif include_hook_word?(event.message['text'], LGTM_WORDS)
+              reply_message = LineReply::Message.lgtm_reply_create
+            else
+              return
             end
+            client.reply_message(event['replyToken'], reply_message)
           end
         end
       }

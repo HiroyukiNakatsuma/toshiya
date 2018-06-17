@@ -16,6 +16,11 @@ class LineReply::Message
       "ほんとにすげーっす！！"
   ]
 
+  LGTM = [
+      "いいっすね！！",
+      "まじいいっすね！！"
+  ]
+
   class << self
     def create(reply_text)
       {
@@ -34,6 +39,10 @@ class LineReply::Message
 
     def amazing_reply_create
       create(random_reply(AMAZING))
+    end
+
+    def lgtm_reply_create
+      create(random_reply(LGTM))
     end
   end
 end
