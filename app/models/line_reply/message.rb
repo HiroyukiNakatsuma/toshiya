@@ -21,6 +21,13 @@ class LineReply::Message
       "まじいいっすね！！"
   ]
 
+  OK = [
+      "オッケーです！！",
+      "おっけーです！！",
+      "オッケーです(^^)",
+      "おっけーです(^^)"
+  ]
+
   class << self
     def create(reply_text)
       {
@@ -43,6 +50,10 @@ class LineReply::Message
 
     def lgtm_reply_create
       create(random_reply(LGTM))
+    end
+
+    def ok_reply_create
+      create(random_reply(OK))
     end
   end
 end

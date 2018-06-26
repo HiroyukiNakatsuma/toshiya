@@ -7,6 +7,7 @@ class LinesController < ApplicationController
   FIRST_GREETING_WORDS = %w(よろしく よろしこ 宜しく 初めまして はじめまして)
   AMAZING_WORDS = %w(すごい すごすぎ すご過ぎ すげー すご！ すごー)
   LGTM_WORDS = %w(いいね いいと いいです いいでしょう いいかな いいよ いい感じ いいー いい。 いい！ いい？ 良いね 良いと 良いです 良いでしょう 良いかな 良いよ 良い感じ 良いー 良い。 良い！ 良い？)
+  OKAY_WORDS = %w(おっけ おけ オッケ オケー ok OK)
 
   def message
     body = request.body.read
@@ -24,6 +25,8 @@ class LinesController < ApplicationController
             elsif include_hook_word?(event.message['text'], AMAZING_WORDS)
               reply_message = LineReply::Message.amazing_reply_create
             elsif include_hook_word?(event.message['text'], LGTM_WORDS)
+              reply_message = LineReply::Message.lgtm_reply_create
+            elsif include_hook_word?(event.message['text'], OKAY_WORDS)
               reply_message = LineReply::Message.lgtm_reply_create
             else
               return
