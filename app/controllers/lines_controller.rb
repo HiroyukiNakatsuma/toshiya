@@ -27,7 +27,7 @@ class LinesController < ApplicationController
             elsif include_hook_word?(event.message['text'], LGTM_WORDS)
               reply_message = LineReply::Message.lgtm_reply_create
             elsif include_hook_word?(event.message['text'], OKAY_WORDS)
-              reply_message = LineReply::Message.lgtm_reply_create
+              reply_message = LineReply::Message.ok_reply_create
             else
               return
             end
