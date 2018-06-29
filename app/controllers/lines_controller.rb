@@ -34,6 +34,7 @@ class LinesController < ApplicationController
             else
               return
             end
+            puts "///////////////////////////////////////////////// #{client.get_profile(event.source['userId'])} /////////////////////////////////////////////////"
             client.reply_message(event['replyToken'], reply_message)
           end
         end
