@@ -32,7 +32,8 @@ class LinesController < ApplicationController
             elsif include_hook_word?(event.message['text'], THANKS_WORDS)
               reply_message = LineReply::Message.thanks_reply_create
             else
-              Rails.logger.info "///////////////////////////////////////////////// #{event.source['userId']} /////////////////////////////////////////////////"
+              Rails.logger.info "///////////////////////////////////////////////// #{event} /////////////////////////////////////////////////"
+              Rails.logger.info "///////////////////////////////////////////////// #{event['source']['userId']} /////////////////////////////////////////////////"
               return
             end
             client.reply_message(event['replyToken'], reply_message)
