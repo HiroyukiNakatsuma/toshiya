@@ -48,8 +48,8 @@ class LineReply::Message
       random_texts[rand(random_texts.length)]
     end
 
-    def first_greeting_reply_create
-      create("よろしくお願いします#{random_reply(EMOJI)}")
+    def first_greeting_reply_create(user_name)
+      create("#{user_name}さん、よろしくお願いします#{random_reply(EMOJI)}")
     end
 
     def amazing_reply_create

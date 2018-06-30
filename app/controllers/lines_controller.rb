@@ -22,7 +22,7 @@ class LinesController < ApplicationController
           case event.type
           when Line::Bot::Event::MessageType::Text
             if include_hook_word?(event.message['text'], FIRST_GREETING_WORDS)
-              reply_message = LineReply::Message.first_greeting_reply_create
+              reply_message = LineReply::Message.first_greeting_reply_create(posted_user_name)
             elsif include_hook_word?(event.message['text'], AMAZING_WORDS)
               reply_message = LineReply::Message.amazing_reply_create
             elsif include_hook_word?(event.message['text'], LGTM_WORDS)
@@ -32,17 +32,6 @@ class LinesController < ApplicationController
             elsif include_hook_word?(event.message['text'], THANKS_WORDS)
               reply_message = LineReply::Message.thanks_reply_create
             else
-              profile = client.get_profile(event['source']['userId'])
-              Rails.logger.info "///////////////////////////////////////////////// #{profile} /////////////////////////////////////////////////"
-
-              case profile
-              when Net::HTTPSuccess then
-                display_name = JSON.parse(profile.body)['displayName']
-                Rails.logger.info "#{display_name}"
-              else
-                Rails.logger.info "#{response.code} #{response.body}"
-              end
-
               return
             end
             client.reply_message(event['replyToken'], reply_message)
@@ -73,5 +62,19 @@ class LinesController < ApplicationController
     hook_words.any? do |word|
       message_text.include?(word)
     end
+  end
+
+  def posted_user_name
+    profile = client.get_profile(event['source']['userId'])
+    display_name = ''
+
+    case profile
+    when Net::HTTPSuccess then
+      display_name = JSON.parse(profile.body)['displayName']
+    else
+      Rails.logger.info "#{response.code} #{response.body}"
+    end
+
+    display_name
   end
 end
