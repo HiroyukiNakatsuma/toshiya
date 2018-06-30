@@ -32,8 +32,17 @@ class LinesController < ApplicationController
             elsif include_hook_word?(event.message['text'], THANKS_WORDS)
               reply_message = LineReply::Message.thanks_reply_create
             else
-              Rails.logger.info "///////////////////////////////////////////////// #{event} /////////////////////////////////////////////////"
-              Rails.logger.info "///////////////////////////////////////////////// #{event['source']['userId']} /////////////////////////////////////////////////"
+              profile = client.get_profile(event['source']['userId'])
+              Rails.logger.info "///////////////////////////////////////////////// #{profile} /////////////////////////////////////////////////"
+
+              case profile
+              when Net::HTTPSuccess then
+                display_name = JSON.parse(profile.body)['displayName']
+                Rails.logger.info "#{display_name}"
+              else
+                Rails.logger.info "#{response.code} #{response.body}"
+              end
+
               return
             end
             client.reply_message(event['replyToken'], reply_message)
