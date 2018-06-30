@@ -25,6 +25,7 @@ class LinesController < ApplicationController
               reply_message = LineReply::Message.first_greeting_reply_create(
                   posted_user_name(
                       event['source']['groupId'],
+                      event['source']['roomId'],
                       event['source']['userId']
                   ))
             elsif include_hook_word?(event.message['text'], AMAZING_WORDS)
@@ -68,8 +69,15 @@ class LinesController < ApplicationController
     end
   end
 
-  def posted_user_name(group_id = nil, user_id)
-    profile = group_id.blank? ? client.get_profile(user_id) : client.get_group_member_profile(group_id, user_id)
+  def posted_user_name(group_id = nil, room_id = nil, user_id)
+    if group_id.present?
+      profile = client.get_group_member_profile(group_id, user_id)
+    elsif room_id.present?
+      profile = client.get_room_member_profile(room_id, user_id)
+    else
+      profile = client.get_profile(user_id)
+    end
+
     display_name = ''
 
     case profile
