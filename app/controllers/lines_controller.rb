@@ -22,7 +22,11 @@ class LinesController < ApplicationController
           case event.type
           when Line::Bot::Event::MessageType::Text
             if include_hook_word?(event.message['text'], FIRST_GREETING_WORDS)
-              reply_message = LineReply::Message.first_greeting_reply_create(posted_user_name(event['source']['userId']))
+              reply_message = LineReply::Message.first_greeting_reply_create(
+                  posted_user_name(
+                      event['source']['groupId'],
+                      event['source']['userId']
+                  ))
             elsif include_hook_word?(event.message['text'], AMAZING_WORDS)
               reply_message = LineReply::Message.amazing_reply_create
             elsif include_hook_word?(event.message['text'], LGTM_WORDS)
@@ -64,8 +68,8 @@ class LinesController < ApplicationController
     end
   end
 
-  def posted_user_name(user_id)
-    profile = client.get_profile(user_id)
+  def posted_user_name(group_id = nil, user_id)
+    profile = group_id.blank? ? client.get_profile(user_id) : client.get_group_member_profile(group_id, user_id)
     display_name = ''
 
     case profile
