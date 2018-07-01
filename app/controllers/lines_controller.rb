@@ -9,6 +9,7 @@ class LinesController < ApplicationController
   LGTM_WORDS = %w(いいね いいと いいです いいでしょう いいかな いいよ いい感じ いいー いい。 いい！ いい？ 良いね 良いと 良いです 良いでしょう 良いかな 良いよ 良い感じ 良いー 良い。 良い！ 良い？)
   OKAY_WORDS = %w(おっけ おけ オッケ オケー ok OK)
   THANKS_WORDS = %w(ありがとう ありがた あざす あざっ あざます さんくす サンクス さんきゅ サンキュ せんきゅ センキュ)
+  GIVE_UP_WORDS = %w(あきらめ 諦め 無理 ムリ 不可能)
 
   def message
     body = request.body.read
@@ -36,6 +37,8 @@ class LinesController < ApplicationController
               reply_message = LineReply::Message.ok_reply_create
             elsif include_hook_word?(event.message['text'], THANKS_WORDS)
               reply_message = LineReply::Message.thanks_reply_create
+            elsif include_hook_word?(event.message['text'], GIVE_UP_WORDS)
+              reply_message = LineReply::Image.give_up_reply_create
             else
               return
             end
