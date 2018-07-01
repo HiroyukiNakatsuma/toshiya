@@ -1,0 +1,11 @@
+development:
+  url:
+    domain: http://localhost:3003
+
+test:
+  url:
+    domain: http://localhost:3003
+
+production:
+  url:
+    domain: https://shielded-tor-45730.herokuapp.com
