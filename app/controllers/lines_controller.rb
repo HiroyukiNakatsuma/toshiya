@@ -10,6 +10,7 @@ class LinesController < ApplicationController
   OKAY_WORDS = %w(おっけ おけ オッケ オケー ok OK)
   THANKS_WORDS = %w(ありがとう ありがた あざす あざっ あざます さんくす サンクス さんきゅ サンキュ せんきゅ センキュ)
   GIVE_UP_WORDS = %w(あきらめ 諦め 無理 ムリ 不可能)
+  TOSHIYA_WORDS = %w(としや toshiya TOSHIYA)
 
   def message
     body = request.body.read
@@ -37,6 +38,8 @@ class LinesController < ApplicationController
               reply_message = LineReply::Message.ok_reply_create
             elsif include_hook_word?(event.message['text'], THANKS_WORDS)
               reply_message = LineReply::Message.thanks_reply_create
+            elsif include_hook_word?(event.message['text'], TOSHIYA_WORDS)
+              reply_message = LineReply::Message.toshiya_reply_create
             elsif include_hook_word?(event.message['text'], GIVE_UP_WORDS)
               reply_message = LineReply::Image.give_up_reply_create
             else

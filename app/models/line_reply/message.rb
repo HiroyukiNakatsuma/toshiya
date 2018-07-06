@@ -36,6 +36,13 @@ class LineReply::Message
       "ありがとうございます(≧▽≦)"
   ]
 
+  TOSHIYA = [
+      "はい！",
+      "はい、なんでしょう？",
+      "僕のことですか？",
+      "呼びました？"
+  ]
+
   class << self
     def create(reply_text)
       {
@@ -66,6 +73,10 @@ class LineReply::Message
 
     def thanks_reply_create
       create(random_reply(THANKS))
+    end
+
+    def toshiya_reply_create
+      create(random_reply(TOSHIYA))
     end
   end
 end
