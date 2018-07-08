@@ -122,6 +122,6 @@ class LinesController < ApplicationController
     return video_urls
 
   rescue => e
-    Rails.logger.info e.result.body
+    Rails.logger.info e
   end
 end
