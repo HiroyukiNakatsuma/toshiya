@@ -122,6 +122,8 @@ class LinesController < ApplicationController
     client, youtube = get_service
 
     begin
+      Rails.logger.info "Call youtube API..."
+
       search_response = client.execute!(
           :api_method => youtube.search.list,
           :parameters => {
@@ -144,7 +146,8 @@ class LinesController < ApplicationController
 
     Rails.logger.info "Video URLs: #{video_urls}"
     return video_urls
-  rescue Google::APIClient::TransmissionError => e
+
+  rescue => e
     Rails.logger.info e.result.body
   end
 end
