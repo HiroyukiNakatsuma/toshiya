@@ -47,7 +47,7 @@ class LinesController < ApplicationController
             elsif include_hook_word?(event.message['text'], SEARCH_YOUTUBE_WORDS)
               urls = search_youtube_and_return_urls
               return if urls.blank?
-              reply_message = urls[0]
+              reply_message = LineReply::Message.create(urls[0])
             else
               return
             end
