@@ -1,5 +1,5 @@
 require 'line/bot'
-require 'google/apis'
+require 'google/apis/youtube_v3'
 
 class LinesController < ApplicationController
   before_action :set_line_client
@@ -13,10 +13,6 @@ class LinesController < ApplicationController
   GIVE_UP_WORDS = %w(あきらめ 諦め 無理 ムリ 不可能)
   TOSHIYA_WORDS = %w(としや toshiya TOSHIYA)
   SEARCH_YOUTUBE_WORDS = %w(おすすめの曲 オススメの曲)
-
-  DEVELOPER_KEY = ENV["GOOGLE_API_KEY"]
-  YOUTUBE_API_SERVICE_NAME = 'youtube'
-  YOUTUBE_API_VERSION = 'v3'
 
   def message
     body = request.body.read
@@ -106,41 +102,19 @@ class LinesController < ApplicationController
     display_name
   end
 
-  def get_service
-    client = Google::APIClient.new(
-        :key => DEVELOPER_KEY,
-        :authorization => nil,
-        :application_name => 'toshiya',
-        :application_version => '1.0.3'
-    )
-    youtube = client.discovered_api(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION)
-
-    return client, youtube
-  end
-
   def search_youtube_and_return_urls
-    client, youtube = get_service
+    youtube = Google::Apis::YoutubeV3::YouTubeService.new
+    youtube.key = ENV["GOOGLE_API_KEY"]
 
-    begin
-      Rails.logger.info "Call youtube API..."
+    Rails.logger.info "Call youtube API."
+    youtube_search_list = youtube.list_searches("id,snippet", type: "video", q: "acappella", max_results: 1)
 
-      search_response = client.execute!(
-          :api_method => youtube.search.list,
-          :parameters => {
-              :part => 'snippet',
-              :q => 'acappella',
-              :maxResults => 1,
-              :type => 'video'
-          }
-      )
+    video_urls = []
 
-      video_urls = []
-
-      search_response.data.items.each do |search_result|
-        case search_result.id.kind
-        when 'youtube#video'
-          video_urls << "https://www.youtube.com/watch?v=#{search_result.id.videoId}"
-        end
+    youtube_search_list.to_hash.items.each do |search_result|
+      case search_result.id.kind
+      when 'youtube#video'
+        video_urls << "https://www.youtube.com/watch?v=#{search_result.id.videoId}"
       end
     end
 
