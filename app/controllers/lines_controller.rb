@@ -111,10 +111,10 @@ class LinesController < ApplicationController
 
     video_urls = []
 
-    youtube_search_list.to_h['items'].each do |search_result|
-      case search_result['id']['kind']
+    youtube_search_list.to_h[:items].each do |search_result|
+      case search_result[:id][:kind]
       when 'youtube#video'
-        video_urls << "https://www.youtube.com/watch?v=#{search_result['id']['videoId']}"
+        video_urls << "https://www.youtube.com/watch?v=#{search_result[:id][:video_id]}"
       end
     end
 
