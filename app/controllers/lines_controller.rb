@@ -111,7 +111,7 @@ class LinesController < ApplicationController
 
     video_urls = []
 
-    youtube_search_list.to_hash.items.each do |search_result|
+    youtube_search_list.to_h.items.each do |search_result|
       case search_result.id.kind
       when 'youtube#video'
         video_urls << "https://www.youtube.com/watch?v=#{search_result.id.videoId}"
