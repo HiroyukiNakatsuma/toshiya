@@ -1,5 +1,5 @@
 require 'line/bot'
-require 'google/api_client'
+require 'google/apis'
 
 class LinesController < ApplicationController
   before_action :set_line_client
@@ -49,7 +49,9 @@ class LinesController < ApplicationController
             elsif include_hook_word?(event.message['text'], GIVE_UP_WORDS)
               reply_message = LineReply::Image.give_up_reply_create
             elsif include_hook_word?(event.message['text'], SEARCH_YOUTUBE_WORDS)
-              reply_message = search_youtube_and_return_urls[0]
+              urls = search_youtube_and_return_urls
+              return if urls.blank?
+              reply_message = urls[0]
             else
               return
             end
