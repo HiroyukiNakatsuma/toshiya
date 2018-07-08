@@ -1,4 +1,5 @@
 require 'line/bot'
+require 'google/api_client'
 
 class LinesController < ApplicationController
   before_action :set_line_client
@@ -11,6 +12,11 @@ class LinesController < ApplicationController
   THANKS_WORDS = %w(ありがとう ありがた あざす あざっ あざます さんくす サンクス さんきゅ サンキュ せんきゅ センキュ)
   GIVE_UP_WORDS = %w(あきらめ 諦め 無理 ムリ 不可能)
   TOSHIYA_WORDS = %w(としや toshiya TOSHIYA)
+  SEARCH_YOUTUBE_WORDS = %w(おすすめの曲 オススメの曲)
+
+  DEVELOPER_KEY = ENV["GOOGLE_API_KEY"]
+  YOUTUBE_API_SERVICE_NAME = 'youtube'
+  YOUTUBE_API_VERSION = 'v3'
 
   def message
     body = request.body.read
@@ -42,6 +48,8 @@ class LinesController < ApplicationController
               reply_message = LineReply::Message.toshiya_reply_create
             elsif include_hook_word?(event.message['text'], GIVE_UP_WORDS)
               reply_message = LineReply::Image.give_up_reply_create
+            elsif include_hook_word?(event.message['text'], SEARCH_YOUTUBE_WORDS)
+              reply_message = search_youtube_and_return_urls[0]
             else
               return
             end
@@ -94,5 +102,47 @@ class LinesController < ApplicationController
     end
 
     display_name
+  end
+
+  def get_service
+    client = Google::APIClient.new(
+        :key => DEVELOPER_KEY,
+        :authorization => nil,
+        :application_name => 'toshiya',
+        :application_version => '1.0.3'
+    )
+    youtube = client.discovered_api(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION)
+
+    return client, youtube
+  end
+
+  def search_youtube_and_return_urls
+    client, youtube = get_service
+
+    begin
+      search_response = client.execute!(
+          :api_method => youtube.search.list,
+          :parameters => {
+              :part => 'snippet',
+              :q => 'acappella',
+              :maxResults => 1,
+              :type => 'video'
+          }
+      )
+
+      video_urls = []
+
+      search_response.data.items.each do |search_result|
+        case search_result.id.kind
+        when 'youtube#video'
+          video_urls << "https://www.youtube.com/watch?v=#{search_result.id.videoId}"
+        end
+      end
+    end
+
+    Rails.logger.info "Video URLs: #{video_urls}"
+    return video_urls
+  rescue Google::APIClient::TransmissionError => e
+    Rails.logger.info e.result.body
   end
 end
